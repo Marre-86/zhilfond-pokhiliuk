@@ -12,3 +12,15 @@
     <img src="https://img.shields.io/badge/резюме_кандидата-28a745?style=for-the-badge" alt="Резюме кандидата">
   </a>
 </p>
+
+## Описание задания
+
+Необходимо реализовать каркас сервиса уведомлений на Laravel. Полный текст ТЗ <a href="https://docs.google.com/document/d/1T-GaADiMze5WngG8lbjK2K8P2bkc67zGiaoH8wj5lXM/edit?tab=t.0" target="_blank">здесь</a>.
+
+## Решение
+
+При проектировании сервиса уведомлений в качестве базового был выбран стандартный паттерн <a href="https://refactoring.guru/ru/design-patterns/strategy" target="_blank">"Стратегия"</a>, позволяющий легко расширять сервис уведомлений новыми каналами без изменений существующего кода. Необходимо лишь добавить новый канал (или "стратегию" ) в качестве нового класса в App\Notifications\Strategies и добавить строчку с этим новым классом в мэппинг в config/notifications.php.
+
+Каждая стратегия имплементирует интерфейс App\Contracts\NotificationStrategy и реализует обязательный метод send() - реальной реализации нет, согласно ТЗ, поставлена заглушка.
+
+Написана тестовая консольная команда app/Console/Commands/TestNotificationCommand.php, демонстрирующая практическое использование сервиса уведомлений.
