@@ -16,8 +16,8 @@ class NotificationService
             throw new \InvalidArgumentException("Unknown channel: $channel");
         }
 
-    $this->strategy = app($strategies[$channel]);
-}
+        $this->strategy = app($strategies[$channel]);
+    }
 
     public function notify(string $message, array $recipient): void
     {

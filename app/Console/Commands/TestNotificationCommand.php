@@ -14,7 +14,10 @@ class TestNotificationCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'notify:test {channel : Notification channel (email or telegram)} {message : Message to send} {recipient : Recipient data as JSON}';
+    protected $signature = 'notify:test
+        {channel : Notification channel (email or telegram)}
+        {message : Message to send}
+        {recipient : Recipient data as JSON}';
 
     /**
      * The console command description.

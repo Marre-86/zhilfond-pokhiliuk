@@ -24,7 +24,7 @@ enum NotificationStatus: int
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::PENDING => 'pending',
             self::SENT => 'sent',
             self::ERROR => 'error',
