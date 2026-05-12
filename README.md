@@ -24,3 +24,66 @@
 Каждая стратегия имплементирует интерфейс App\Contracts\NotificationStrategy и реализует обязательный метод send() - реальной реализации нет, согласно ТЗ, поставлена заглушка.
 
 Написана тестовая консольная команда app/Console/Commands/TestNotificationCommand.php, демонстрирующая практическое использование сервиса уведомлений.
+
+## Запуск проекта через Docker
+
+Необходимо наличие предустановленного Docker и Docker Compose.
+
+1. **Склонируйте репозиторий и перейдите в каталог с ним**:
+   ```bash
+   git clone https://github.com/Marre-86/zhilfond-pokhiliuk.git zhilfond-pokhiliuk
+   cd zhilfond-pokhiliuk
+   ```
+
+1. **Скопируйте файл окружения** (если его нет):
+   ```bash
+   cp .env.example .env
+   ```
+
+3. **Запустите контейнеры**:
+   ```bash
+   docker compose up -d
+   ```
+
+4. **Установите зависимости PHP** внутри контейнера:
+   ```bash
+   docker compose exec app composer install
+   ```
+
+5. **Сгенерируйте ключ приложения**:
+   ```bash
+   docker compose exec app php artisan key:generate
+   ```
+
+6. **Выполните миграции и сидирование базы данных**:
+   ```bash
+   docker compose exec app php artisan migrate --seed
+   ```
+
+7. **Приложение будет доступно** по адресу: http://localhost
+
+### Описание сервисов
+
+Docker Compose включает следующие сервисы:
+
+- **app**: PHP-FPM 8.3 с Xdebug для покрытия кода
+- **web**: Nginx веб-сервер
+- **database**: MySQL 8.4.9
+
+### Полезные команды
+
+- **Просмотр состояние контейнеров**: `docker compose ps`
+- **Просмотр логов**: `docker compose logs -f`
+- **Остановка контейнеров**: `docker compose down`
+- **Подключение к консоли БД**:
+```bash
+   docker compose exec database bash
+   mysql -ularavel -ppass zhilfond_pokhiliuk
+   ```
+- **Подключение к консоли приложения**: `docker compose exec app bash`
+
+изнутри консоли приложения:
+- **Запуск тестов**: `make test`
+- **Проверка code style**: `make lint`
+- **Запуск тестовой команды уведомлений**: `php artisan notify:test email "Тестовое сообщение" '{"email":"test@example.com"}'`
+
