@@ -15,12 +15,14 @@ return new class extends Migration
             $table->id();
             $table->text('message')->nullable(); // Using text to allow up to 500 chars
             $table->tinyInteger('status')->default(0); // 0 = pending, 1 = sent, 2 = error
+            $table->string('channel')->nullable();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
             
             // Index for performance
             $table->index('status');
             $table->index('user_id');
+            $table->index('channel');
         });
     }
 

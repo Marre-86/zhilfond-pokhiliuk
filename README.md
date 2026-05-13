@@ -15,7 +15,8 @@
 
 ## Описание задания
 
-Необходимо реализовать каркас сервиса уведомлений на Laravel. Полный текст ТЗ <a href="https://docs.google.com/document/d/1T-GaADiMze5WngG8lbjK2K8P2bkc67zGiaoH8wj5lXM/edit?tab=t.0" target="_blank">здесь</a>.
+Необходимо реализовать каркас сервиса уведомлений на Laravel. Полный текст ТЗ [здесь](testovoe.docx)
+.
 
 ## Решение
 

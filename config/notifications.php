@@ -1,8 +1,10 @@
 <?php
 
+use App\Enums\NotificationChannel;
+
 return [
     'strategies' => [
-        'email' => App\Notifications\Strategies\EmailNotificationStrategy::class,
-        'telegram' => App\Notifications\Strategies\TelegramNotificationStrategy::class,
+        NotificationChannel::EMAIL->value => App\Notifications\Strategies\EmailNotificationStrategy::class,
+        NotificationChannel::TELEGRAM->value => App\Notifications\Strategies\TelegramNotificationStrategy::class,
     ]
 ];

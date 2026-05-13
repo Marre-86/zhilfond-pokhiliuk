@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Notifications\NotificationService;
+use App\Services\NotificationCreator;
+use App\Models\User;
 use Illuminate\Console\Command;
 use InvalidArgumentException;
 use RuntimeException;
@@ -17,7 +19,8 @@ class TestNotificationCommand extends Command
     protected $signature = 'notify:test
         {channel : Notification channel (email or telegram)}
         {message : Message to send}
-        {recipient : Recipient data as JSON}';
+        {recipient : Recipient data as JSON}
+        {--user-id= : User ID for the notification (defaults to first user or creates one)}';
 
     /**
      * The console command description.
@@ -29,7 +32,7 @@ class TestNotificationCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle(NotificationService $notificationService): int
+    public function handle(NotificationService $notificationService, NotificationCreator $notificationCreator): int
     {
         $channel = $this->argument('channel');
         $message = $this->argument('message');
@@ -42,6 +45,25 @@ class TestNotificationCommand extends Command
             return self::FAILURE;
         }
 
+        // Get default user (admin from seeder)
+        $user = $this->getDefaultUser();
+        $userId = $user->id;
+
+        // Create notification in database
+        try {
+            $notification = $notificationCreator->create([
+                'message' => $message,
+                'user_id' => $userId,
+                'channel' => $channel,
+                'status' => 0, // PENDING
+            ]);
+            $this->info('Notification created in database with ID: ' . $notification->id);
+        } catch (InvalidArgumentException $e) {
+            $this->error('Failed to create notification: ' . $e->getMessage());
+            return self::FAILURE;
+        }
+
+        // Send notification via service (logs)
         try {
             $notificationService->setStrategyByChannel($channel);
         } catch (InvalidArgumentException $e) {
@@ -58,5 +80,18 @@ class TestNotificationCommand extends Command
 
         $this->info('Notification sent successfully (logged).');
         return self::SUCCESS;
+    }
+
+    /**
+     * Get the default user (admin user from seeder).
+     *
+     * @return User
+     */
+    private function getDefaultUser(): User
+    {
+        $adminEmail = env('ADMIN_EMAIL');
+        $user = User::where('email', $adminEmail)->first();
+
+        return $user;
     }
 }
