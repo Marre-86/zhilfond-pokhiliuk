@@ -82,7 +82,11 @@ class TestNotificationCommand extends Command
                 $this->warn('Notification failed. Status: ERROR - ' . $notification->error_message);
 
                 if ($notification->retry_count < $notification->max_retries) {
-                    $this->info('Notification will be retried (attempt ' . $notification->retry_count . ' of ' . $notification->max_retries . ')');
+                    $this->info(sprintf(
+                        'Notification will be retried (attempt %d of %d)',
+                        $notification->retry_count,
+                        $notification->max_retries
+                    ));
                 }
             }
         } catch (RuntimeException $e) {
@@ -100,7 +104,7 @@ class TestNotificationCommand extends Command
      */
     private function getDefaultUser(): User
     {
-        $testUserEmail = env('TEST_USER_EMAIL');
+        $testUserEmail = config('app.user_email');
         $user = User::where('email', $testUserEmail)->first();
 
         return $user;

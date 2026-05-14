@@ -17,8 +17,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Create test user from environment variables
-        $testUserEmail = env('TEST_USER_EMAIL');
-        $testUserPassword = env('TEST_USER_PASSWORD');
+        $testUserEmail = config('app.user_email');
+        $testUserPassword = config('app.user_password');
 
         if ($testUserEmail && $testUserPassword) {
             User::factory()->create([

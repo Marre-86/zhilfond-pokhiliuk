@@ -95,7 +95,10 @@ class NotificationService
 
         // In a real application, you would dispatch a job with delay
         // For this test project, we'll just log the retry
-        Log::info("Notification {$notification->id} scheduled for retry in {$delay} seconds (attempt {$notification->retry_count})");
+        Log::info(
+            "Notification {$notification->id} scheduled for retry " .
+            "in {$delay} seconds (attempt {$notification->retry_count})"
+        );
 
         // You could implement a job dispatch here:
         // SendNotificationJob::dispatch($notification)->delay(now()->addSeconds($delay));

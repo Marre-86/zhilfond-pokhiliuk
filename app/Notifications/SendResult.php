@@ -18,13 +18,20 @@ class SendResult
         return new self(true);
     }
 
-    public static function failure(string $errorMessage, ?string $errorCode = null, bool $shouldRetry = false, ?int $retryDelay = null): self
-    {
+    public static function failure(
+        string $errorMessage,
+        ?string $errorCode = null,
+        bool $shouldRetry = false,
+        ?int $retryDelay = null
+    ): self {
         return new self(false, $errorMessage, $errorCode, $shouldRetry, $retryDelay);
     }
 
-    public static function transientFailure(string $errorMessage, ?string $errorCode = null, ?int $retryDelay = null): self
-    {
+    public static function transientFailure(
+        string $errorMessage,
+        ?string $errorCode = null,
+        ?int $retryDelay = null
+    ): self {
         return new self(false, $errorMessage, $errorCode, true, $retryDelay);
     }
 
