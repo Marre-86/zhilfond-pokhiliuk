@@ -5,8 +5,9 @@ namespace App\Enums;
 enum NotificationStatus: int
 {
     case PENDING = 0;
-    case SENT = 1;
-    case ERROR = 2;
+    case PROCESSING = 1;
+    case SENT = 2;
+    case ERROR = 3;
 
     public static function values(): array
     {
@@ -17,6 +18,7 @@ enum NotificationStatus: int
     {
         return [
             self::PENDING->value => 'pending',
+            self::PROCESSING->value => 'processing',
             self::SENT->value => 'sent',
             self::ERROR->value => 'error',
         ];
@@ -26,6 +28,7 @@ enum NotificationStatus: int
     {
         return match ($this) {
             self::PENDING => 'pending',
+            self::PROCESSING => 'processing',
             self::SENT => 'sent',
             self::ERROR => 'error',
         };

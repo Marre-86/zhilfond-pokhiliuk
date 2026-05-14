@@ -19,8 +19,7 @@ class TestNotificationCommand extends Command
     protected $signature = 'notify:test
         {channel : Notification channel (email or telegram)}
         {message : Message to send}
-        {recipient : Recipient data as JSON}
-        {--user-id= : User ID for the notification (defaults to first user or creates one)}';
+        {recipient : Recipient data as JSON}';
 
     /**
      * The console command description.
@@ -72,13 +71,25 @@ class TestNotificationCommand extends Command
         }
 
         try {
-            $notificationService->notify($message, $recipient);
+            $notificationService->notify($notification, $recipient);
+
+            // Refresh notification to get updated status
+            $notification->refresh();
+
+            if ($notification->status->value === \App\Enums\NotificationStatus::SENT->value) {
+                $this->info('Notification sent successfully. Status: SENT');
+            } else {
+                $this->warn('Notification failed. Status: ERROR - ' . $notification->error_message);
+
+                if ($notification->retry_count < $notification->max_retries) {
+                    $this->info('Notification will be retried (attempt ' . $notification->retry_count . ' of ' . $notification->max_retries . ')');
+                }
+            }
         } catch (RuntimeException $e) {
             $this->error($e->getMessage());
             return self::FAILURE;
         }
 
-        $this->info('Notification sent successfully (logged).');
         return self::SUCCESS;
     }
 

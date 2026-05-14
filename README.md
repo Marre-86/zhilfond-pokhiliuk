@@ -22,14 +22,26 @@
 
 При проектировании сервиса уведомлений в качестве базового был выбран стандартный паттерн <a href="https://refactoring.guru/ru/design-patterns/strategy" target="_blank">"Стратегия"</a>, позволяющий легко расширять сервис уведомлений новыми каналами без изменений существующего кода. Необходимо лишь добавить новый канал (или "стратегию" ) в качестве нового класса в [App\Notifications\Strategies](app/Notifications/Strategies/) и добавить строчку с этим новым классом в мэппинг в [config/notifications.php](config/notifications.php), а новый канал - в Enum [App\Enums\NotificationChannel](app/Enums/NotificationChannel.php).
 
-Каждая стратегия имплементирует интерфейс [App\Contracts\NotificationStrategy](app/Contracts/NotificationStrategy.php) и реализует обязательный метод send() - реальной реализации нет, согласно ТЗ, поставлена заглушка.
+Каждая стратегия имплементирует интерфейс [App\Contracts\NotificationStrategy](app/Contracts/NotificationStrategy.php) и реализует обязательный метод send() - реальной реализации нет, согласно ТЗ, поставлена заглушка. Заглушка представляет из себя симуляцию обращения во внешний сервис (отправки уведомления) и рандомно возвращающую "успех" или "неудачу" (вероятности этого, а также другие настройки данной заглушки можно подкрутить в config/notifications.php).
 
-Написана тестовая консольная команда [App\Console\Commands\TestNotificationCommand](app/Console/Commands/TestNotificationCommand.php), демонстрирующая практическое использование сервиса уведомлений. Команда выполняет создание и отправку уведомления. То же самое можно сделать путем обращения извне на API-route **POST /api/store-notification**. Чтобы избежать дублирования, 
-переиспользуемый код вынесен в отдельный сервис [App\Services\NotificationCreator](app/Services/NotificationCreator.php).
+[App\Notifications\NotificationService](app/Notifications/NotificationService.php) - сервис уведомлений, в котором можно установить выбранную стратегию и осуществить отправку.
+
+Написана тестовая консольная команда [App\Console\Commands\TestNotificationCommand](app/Console/Commands/TestNotificationCommand.php), демонстрирующая практическое использование сервиса уведомлений. Команда выполняет создание и отправку уведомления. Создание уведомления (но не отправку) также можно сделать путем обращения извне на API-route **POST /api/store-notification**. Чтобы избежать дублирования, переиспользуемый код вынесен в отдельный сервис [App\Services\NotificationCreator](app/Services/NotificationCreator.php).
 
 Реализовано также ещё два эндпойнта API:
 - **GET /notification-status/:id** - проверка статуса оповещения по id
 - **GET /user/:id/notifications** - возвращает список всех оповещений указанного пользователя. Есть фильтрация по статусу и каналу.
+
+### Гарантия доставки
+Ключевой метод стратегий send() возвращает объект класса [App\Notifications\SendResult](app/Notifications/Strategies/EmailNotificationStrategy.php), который содержит данные о результатах попытки отправки уведомления. **NotificationService** принимает их и, в случае если получил неудачу, выполняет заданные действия по повторной отправке. На данный момент эти действия по сути не заданы - см. следующий пункт "Что можно улучшить для продакшна".
+
+### Что можно улучшить для продакшна
+- Создать отдельный Job-класс **SendNotificationJob**, который будет отвечать за повторные попытки отправки уведомлений. Использовать этот Job-класс в методе *scheduleRetry()* сервиса уведомлений **NotificationService** (вместо простого логирования, которое прописано там сейчас).
+- Запроектировать использование Job-класса **SendNotificationJob** для отправки уведомлений, полученных извне на API-эндпойнт **POST /api/store-notification** (сейчас они просто сохраняются в БД). Для этого придётся либо расширить эндпойнт, чтобы он принимал необходимые для отправки параметры (email, telegram_chat_id), либо извлекать эти значения из БД (предусмотреть сохранения данных параметров для пользователей).
+
+### Тесты, статический анализ, code style
+- Автотесты написаны, запускаются командой `make test`, покрывают основной бизнес-функционал.
+- Code style проверяется командой `make lint` - в качестве линтера выбран [PHP_CodeSniffer](https://github.com/squizlabs/php_codesniffer).
 
 
 ## Запуск проекта через Docker

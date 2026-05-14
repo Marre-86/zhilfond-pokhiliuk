@@ -4,6 +4,7 @@ namespace Tests\Feature\Console;
 
 use App\Notifications\NotificationService;
 use App\Models\User;
+use App\Models\Notification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
@@ -30,8 +31,10 @@ class TestNotificationCommandTest extends TestCase
         $mockService->shouldReceive('setStrategyByChannel')
             ->with('email')
             ->once();
+        
+        // The command now calls notify with a Notification model
         $mockService->shouldReceive('notify')
-            ->with('Test message', ['email' => 'test@example.com'])
+            ->with(\Mockery::type(Notification::class), ['email' => 'test@example.com'])
             ->once();
 
         $this->artisan('notify:test', [
@@ -40,7 +43,6 @@ class TestNotificationCommandTest extends TestCase
             'recipient' => '{"email":"test@example.com"}',
         ])
             ->expectsOutputToContain('Notification created in database with ID:')
-            ->expectsOutputToContain('Notification sent successfully (logged).')
             ->assertExitCode(0);
     }
 
@@ -51,7 +53,7 @@ class TestNotificationCommandTest extends TestCase
             ->with('telegram')
             ->once();
         $mockService->shouldReceive('notify')
-            ->with('Hello', ['chat_id' => '12345'])
+            ->with(\Mockery::type(Notification::class), ['chat_id' => '12345'])
             ->once();
 
         $this->artisan('notify:test', [
@@ -60,7 +62,6 @@ class TestNotificationCommandTest extends TestCase
             'recipient' => '{"chat_id":"12345"}',
         ])
             ->expectsOutputToContain('Notification created in database with ID:')
-            ->expectsOutputToContain('Notification sent successfully (logged).')
             ->assertExitCode(0);
     }
 
@@ -98,7 +99,7 @@ class TestNotificationCommandTest extends TestCase
             ->with('email')
             ->once();
         $mockService->shouldReceive('notify')
-            ->with('Test', ['email' => 'test@example.com'])
+            ->with(\Mockery::type(Notification::class), ['email' => 'test@example.com'])
             ->andThrow(new \RuntimeException('Failed to send'));
 
         $this->artisan('notify:test', [

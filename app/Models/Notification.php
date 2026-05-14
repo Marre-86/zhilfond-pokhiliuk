@@ -21,6 +21,12 @@ class Notification extends Model
         'status',
         'channel',
         'user_id',
+        'sent_at',
+        'failed_at',
+        'retry_count',
+        'max_retries',
+        'error_message',
+        'error_code',
     ];
 
     /**
@@ -30,6 +36,10 @@ class Notification extends Model
      */
     protected $casts = [
         'status' => NotificationStatus::class,
+        'sent_at' => 'datetime',
+        'failed_at' => 'datetime',
+        'retry_count' => 'integer',
+        'max_retries' => 'integer',
     ];
 
     /**
