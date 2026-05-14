@@ -17,17 +17,17 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Create test user from environment variables
-        $adminEmail = env('ADMIN_EMAIL');
-        $adminPassword = env('ADMIN_PASSWORD');
+        $testUserEmail = env('TEST_USER_EMAIL');
+        $testUserPassword = env('TEST_USER_PASSWORD');
 
-        if ($adminEmail && $adminPassword) {
+        if ($testUserEmail && $testUserPassword) {
             User::factory()->create([
-                'name' => 'Admin',
-                'email' => $adminEmail,
-                'password' => Hash::make($adminPassword),
+                'name' => 'Test User',
+                'email' => $testUserEmail,
+                'password' => Hash::make($testUserPassword),
             ]);
             
-            $this->command->info("Admin user created with email: {$adminEmail}");
+            $this->command->info("Test user created with email: {$testUserEmail}");
         }
     }
 }

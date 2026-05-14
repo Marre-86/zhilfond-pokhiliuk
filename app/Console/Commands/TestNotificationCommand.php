@@ -45,7 +45,7 @@ class TestNotificationCommand extends Command
             return self::FAILURE;
         }
 
-        // Get default user (admin from seeder)
+        // Get default user (test user from seeder)
         $user = $this->getDefaultUser();
         $userId = $user->id;
 
@@ -83,14 +83,14 @@ class TestNotificationCommand extends Command
     }
 
     /**
-     * Get the default user (admin user from seeder).
+     * Get the default user (test user from seeder).
      *
      * @return User
      */
     private function getDefaultUser(): User
     {
-        $adminEmail = env('ADMIN_EMAIL');
-        $user = User::where('email', $adminEmail)->first();
+        $testUserEmail = env('TEST_USER_EMAIL');
+        $user = User::where('email', $testUserEmail)->first();
 
         return $user;
     }

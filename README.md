@@ -20,11 +20,17 @@
 
 ## Решение
 
-При проектировании сервиса уведомлений в качестве базового был выбран стандартный паттерн <a href="https://refactoring.guru/ru/design-patterns/strategy" target="_blank">"Стратегия"</a>, позволяющий легко расширять сервис уведомлений новыми каналами без изменений существующего кода. Необходимо лишь добавить новый канал (или "стратегию" ) в качестве нового класса в App\Notifications\Strategies и добавить строчку с этим новым классом в мэппинг в config/notifications.php.
+При проектировании сервиса уведомлений в качестве базового был выбран стандартный паттерн <a href="https://refactoring.guru/ru/design-patterns/strategy" target="_blank">"Стратегия"</a>, позволяющий легко расширять сервис уведомлений новыми каналами без изменений существующего кода. Необходимо лишь добавить новый канал (или "стратегию" ) в качестве нового класса в [App\Notifications\Strategies](app/Notifications/Strategies/) и добавить строчку с этим новым классом в мэппинг в [config/notifications.php](config/notifications.php), а новый канал - в Enum [App\Enums\NotificationChannel](app/Enums/NotificationChannel.php).
 
-Каждая стратегия имплементирует интерфейс App\Contracts\NotificationStrategy и реализует обязательный метод send() - реальной реализации нет, согласно ТЗ, поставлена заглушка.
+Каждая стратегия имплементирует интерфейс [App\Contracts\NotificationStrategy](app/Contracts/NotificationStrategy.php) и реализует обязательный метод send() - реальной реализации нет, согласно ТЗ, поставлена заглушка.
 
-Написана тестовая консольная команда app/Console/Commands/TestNotificationCommand.php, демонстрирующая практическое использование сервиса уведомлений.
+Написана тестовая консольная команда [App\Console\Commands\TestNotificationCommand](app/Console/Commands/TestNotificationCommand.php), демонстрирующая практическое использование сервиса уведомлений. Команда выполняет создание и отправку уведомления. То же самое можно сделать путем обращения извне на API-route **POST /api/store-notification**. Чтобы избежать дублирования, 
+переиспользуемый код вынесен в отдельный сервис [App\Services\NotificationCreator](app/Services/NotificationCreator.php).
+
+Реализовано также ещё два эндпойнта API:
+- **GET /notification-status/:id** - проверка статуса оповещения по id
+- **GET /user/:id/notifications** - возвращает список всех оповещений указанного пользователя. Есть фильтрация по статусу и каналу.
+
 
 ## Запуск проекта через Docker
 

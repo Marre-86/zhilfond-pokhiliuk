@@ -16,11 +16,11 @@ class TestNotificationCommandTest extends TestCase
     {
         parent::setUp();
 
-        // Create the default admin user that the command expects
+        // Create the default test user that the command expects
         User::factory()->create([
-            'name' => 'Admin',
-            'email' => env('ADMIN_EMAIL'),
-            'password' => Hash::make(env('ADMIN_PASSWORD')),
+            'name' => 'Test User',
+            'email' => env('TEST_USER_EMAIL'),
+            'password' => Hash::make(env('TEST_USER_PASSWORD')),
         ]);
     }
 
